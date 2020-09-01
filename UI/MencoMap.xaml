@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MencoApp.UI"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
         mc:Ignorable="d"
         Height="auto" Width="auto" Visibility="Visible" 
@@ -23,7 +24,7 @@
     </UserControl.Resources>
 
     <m:Map Name="BingMap" Mode="Road" ZoomLevel="12" Center="45.461925, 9.172599" Margin="0,0,0,0">
-        <Button x:Name="SwitchModeButton" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0" Width="auto" Click="SwitchModeButton_Click">
+        <Button x:Name="SwitchModeButton"  HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0" Width="auto" Click="SwitchModeButton_Click">
             <TextBlock x:Name="SwitchModeButtonText" Text="Aerial"/>
         </Button>
     </m:Map>
