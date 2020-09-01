@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MencoApp", "MencoApp.csproj", "{2540E740-D1CE-40CE-9A2D-111560BD954A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2540E740-D1CE-40CE-9A2D-111560BD954A}.Debug|x64.ActiveCfg = Debug|x64
+		{2540E740-D1CE-40CE-9A2D-111560BD954A}.Debug|x64.Build.0 = Debug|x64
+		{2540E740-D1CE-40CE-9A2D-111560BD954A}.Release|x64.ActiveCfg = Release|x64
+		{2540E740-D1CE-40CE-9A2D-111560BD954A}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D4C9E33A-6288-4219-9691-E1B33EAD7251}
+	EndGlobalSection
+EndGlobal

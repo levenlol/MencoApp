@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="MencoApp.UI.MencoMap"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MencoApp.UI" 
+        xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+        mc:Ignorable="d"
+        Height="auto" Width="auto" Visibility="Visible" 
+        d:DesignWidth="600" d:DesignHeight="400"
+        Mouse.MouseDown="UserControl_MouseDown">
+
+    <UserControl.Resources>
+        <ControlTemplate x:Key="PushpinControlTemplate" TargetType="m:Pushpin">
+            <Grid>
+                <Rectangle Width="32" Height="32">
+                    <Rectangle.Fill>
+                        <ImageBrush ImageSource= "/Resources/airplane_icon.png"/>
+                    </Rectangle.Fill>
+                </Rectangle>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Resources>
+
+    <m:Map Name="BingMap" Mode="Road" ZoomLevel="12" Center="45.461925, 9.172599" Margin="0,0,0,0">
+        <Button x:Name="SwitchModeButton" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0" Width="auto" Click="SwitchModeButton_Click">
+            <TextBlock x:Name="SwitchModeButtonText" Text="Aerial"/>
+        </Button>
+    </m:Map>
+</UserControl>
