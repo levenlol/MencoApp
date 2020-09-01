@@ -10,21 +10,15 @@ namespace MencoApp.Core
         protected  SimConnect simConnection;
         private Timer timer = new Timer();
         private IntPtr Handle; // not sure for what is used for.
+        bool Connected = false;
+
         protected abstract double PollingInterval { get; }
 
-        public bool IsConnected =>simConnection != null;
+        public bool IsConnected => Connected && simConnection != null;
 
         protected AirplaneBaseFunctionality()
         {
             Connect();
-
-            if(PollingInterval > 0)
-            {
-                timer.Interval = PollingInterval;
-                timer.Elapsed += Tick;
-
-                timer.Start();
-            }
         }
 
         private void Tick(object sender, ElapsedEventArgs e)
@@ -39,7 +33,6 @@ namespace MencoApp.Core
         {
             Clear();
 
-            timer.Stop();
         }
 
         private void Tick(Object myObj, EventArgs args)
@@ -60,12 +53,11 @@ namespace MencoApp.Core
                 simConnection.OnRecvOpen += new SimConnect.RecvOpenEventHandler(SimConnect_OnRecvOpen);
                 simConnection.OnRecvQuit += new SimConnect.RecvQuitEventHandler(SimConnect_OnRecvQuit);
 
-                /// Listen to exceptions
+                // Listen to exceptions
                 simConnection.OnRecvException += new SimConnect.RecvExceptionEventHandler(SimConnect_OnRecvException);
 
+                // Catch a simobject data request
                 simConnection.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(SimConnect_OnRecvObjectData);
-
-                /// Catch a simobject data request
                 simConnection.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
             }
             catch
@@ -75,17 +67,11 @@ namespace MencoApp.Core
             
         }
 
-        protected virtual void OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
-        {
-
-        }
-
+        protected virtual void OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data){}
         private void SimConnect_OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
-            Console.WriteLine("Data received, by type");
-
             // invoke on main thread.
-            Application.Current.Dispatcher.Invoke(new Action(() => OnRecvObjectData(sender, data)));
+            Application.Current?.Dispatcher.Invoke(new Action(() => OnRecvObjectData(sender, data)));
         }
 
         private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
@@ -96,17 +82,36 @@ namespace MencoApp.Core
 
         protected virtual void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
         {
-            Console.WriteLine("Data received, by type");
+            // didn't find any difference between SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE and SIMCONNECT_RECV_EXCEPTION. should be safe to do that.
+            // invoke on main thread.
+            Application.Current?.Dispatcher.Invoke(new Action(() => OnRecvObjectData(sender, data)));
+        }
+
+        private void TryStartTimer()
+        {
+            if (PollingInterval > 0)
+            {
+                timer.Interval = PollingInterval;
+                timer.Elapsed += Tick;
+
+                timer.Start();
+            }
         }
 
         protected virtual void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
         {
             Console.WriteLine("SimConnect Connected.");
+
+            Connected = true;
+
+            TryStartTimer();
         }
 
         protected virtual void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
             Console.WriteLine("SimConnect Disconnected.");
+            
+            timer.Stop();
 
             Clear();
         }
@@ -115,10 +120,10 @@ namespace MencoApp.Core
         {
             if (simConnection != null)
             {
-                simConnection?.Dispose();
                 simConnection = null;
             }
 
+            Connected = false;
             Handle = IntPtr.Zero;
         }
 

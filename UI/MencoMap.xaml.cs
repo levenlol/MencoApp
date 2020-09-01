@@ -31,21 +31,23 @@ namespace MencoApp.UI
 
         private void LocationChange(object sender, LocationChangedEventArgs args)
         {
-            double latitude = args.Position.latitude, longitude = args.Position.longitude;
+            double latitude = args.info.latitude;
+            double longitude = args.info.longitude;
+            double yaw = args.info.yaw;
 
-            MovePin(latitude, longitude);
+            MovePin(latitude, longitude, yaw);
 
             //#todo if gps active update map
             BingMap.Center = new Location(latitude, longitude);
         }
 
-        private void MovePin(double latitude, double longitude)
+        private void MovePin(double latitude, double longitude, double yaw)
         {
+            // move
             airplanePin.Location = new Location(latitude, longitude);
 
-            //#todo rotate
-
-
+            // rotate
+            airplanePin.Heading = yaw;
         }
 
         private void InitMap()

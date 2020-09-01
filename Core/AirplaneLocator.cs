@@ -29,7 +29,7 @@ namespace MencoApp.Core
     {
         public class LocationChangedEventArgs : EventArgs
         {
-            public AirplaneGeoInfo Position;
+            public AirplaneGeoInfo info;
         }
 
         public override string FunctionalityName => "Airplane Locator";
@@ -73,8 +73,8 @@ namespace MencoApp.Core
 
         protected override void OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
-            AirplaneGeoInfo currentPos = (AirplaneGeoInfo) data.dwData[0];
-            LocationChangedEventArgs args = new LocationChangedEventArgs { Position = currentPos };
+            AirplaneGeoInfo geoInfo = (AirplaneGeoInfo) data.dwData[0];
+            LocationChangedEventArgs args = new LocationChangedEventArgs { info = geoInfo };
 
             OnAircraftLocationChanged?.Invoke(this, args);
         }
