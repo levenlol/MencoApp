@@ -20,6 +20,6 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <ui:MencoMap Grid.Column="1" Grid.Row="1" Width="auto" Height="auto" Margin="5"/>
+        <ui:MencoMap Grid.Column="1" Grid.Row="1" Width="auto" Height="auto"/>
     </Grid>
 </Window>
