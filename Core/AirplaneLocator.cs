@@ -7,21 +7,34 @@ using System.Threading.Tasks;
 
 namespace MencoApp.Core
 {
-    public struct AirplanePosition
+    public struct AirplaneGeoInfo
     {
+        // Positions
         public double altitude;
-        public double latitude;
-        public double longitude;
+        public double latitude; // deg
+        public double longitude; // deg
+
+        // Velocity (m/s)
+        public double worldVelocityX;
+        public double worldVelocityY;
+        public double worldVelocityZ;
+
+        // Rotation DEGREES
+        public double yaw;
+        public double pitch;
+        public double roll;
     }
 
     public class AirplaneLocator : AirplaneBaseFunctionality
     {
         public class LocationChangedEventArgs : EventArgs
         {
-            public AirplanePosition Position;
+            public AirplaneGeoInfo Position;
         }
 
         public override string FunctionalityName => "Airplane Locator";
+
+        protected override double PollingInterval => 0.2;
 
         public static event EventHandler<LocationChangedEventArgs> OnAircraftLocationChanged;
 
@@ -29,14 +42,25 @@ namespace MencoApp.Core
         {
             if(IsConnected)
             {
+                // Positions
                 simConnection.AddToDataDefinition(UserData.Position, "PLANE ALTITUDE", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simConnection.AddToDataDefinition(UserData.Position, "PLANE LATITUDE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
                 simConnection.AddToDataDefinition(UserData.Position, "PLANE LONGITUDE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
 
-                simConnection.RegisterDataDefineStruct<AirplanePosition>(UserData.Position);
+                // Velocity
+                simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD X", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD Y", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD Z", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+
+                // RotationS
+                simConnection.AddToDataDefinition(UserData.Position, "PLANE HEADING DEGREES TRUE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simConnection.AddToDataDefinition(UserData.Position, "PLANE PITCH DEGREES", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+                simConnection.AddToDataDefinition(UserData.Position, "PLANE BANK DEGREES", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+
+                simConnection.RegisterDataDefineStruct<AirplaneGeoInfo>(UserData.Position);
 
                 //simConnection.RequestDataOnSimObjectType(UserData.Position, UserData.Position, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-                simConnection.RequestDataOnSimObject(UserData.Position, UserData.Position, (uint)SIMCONNECT_SIMOBJECT_TYPE.USER, SIMCONNECT_PERIOD.SECOND, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
+                simConnection.RequestDataOnSimObject(UserData.Position, UserData.Position, (uint)SIMCONNECT_SIMOBJECT_TYPE.USER, SIMCONNECT_PERIOD.VISUAL_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
             }
         }
 
@@ -49,13 +73,10 @@ namespace MencoApp.Core
 
         protected override void OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
-            AirplanePosition currentPos = (AirplanePosition) data.dwData[0];
+            AirplaneGeoInfo currentPos = (AirplaneGeoInfo) data.dwData[0];
             LocationChangedEventArgs args = new LocationChangedEventArgs { Position = currentPos };
 
-            if (OnAircraftLocationChanged != null)
-            {
-                OnAircraftLocationChanged(this, args);
-            }
+            OnAircraftLocationChanged?.Invoke(this, args);
         }
     }
 }

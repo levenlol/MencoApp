@@ -10,7 +10,7 @@ namespace MencoApp.Core
         protected  SimConnect simConnection;
         private Timer timer = new Timer();
         private IntPtr Handle; // not sure for what is used for.
-        private double PollingInterval = 0.5; // 2 times per second
+        protected abstract double PollingInterval { get; }
 
         public bool IsConnected =>simConnection != null;
 
