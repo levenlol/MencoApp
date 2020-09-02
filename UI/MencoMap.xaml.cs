@@ -16,9 +16,6 @@ namespace MencoApp.UI
     {
         Pushpin airplanePin = null;
 
-        //Debug
-        AirplaneLocator loc = new AirplaneLocator();
-
         public MencoMap()
         {
             InitializeComponent();
@@ -26,7 +23,7 @@ namespace MencoApp.UI
             InitMap();
             InitPin();
 
-            AirplaneLocator.OnAircraftLocationChanged += LocationChange;
+            App.GetMencoApp().Sim_AirplaneLocator.OnAircraftDataChanged += LocationChange;
         }
 
         private void LocationChange(object sender, LocationChangedEventArgs args)

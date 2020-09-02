@@ -36,7 +36,7 @@ namespace MencoApp.Core
 
         protected override double PollingInterval => 0.2;
 
-        public static event EventHandler<LocationChangedEventArgs> OnAircraftLocationChanged;
+        public event EventHandler<LocationChangedEventArgs> OnAircraftDataChanged;
 
         public AirplaneLocator() : base()
         {
@@ -76,7 +76,7 @@ namespace MencoApp.Core
             AirplaneGeoInfo geoInfo = (AirplaneGeoInfo) data.dwData[0];
             LocationChangedEventArgs args = new LocationChangedEventArgs { info = geoInfo };
 
-            OnAircraftLocationChanged?.Invoke(this, args);
+            OnAircraftDataChanged?.Invoke(this, args);
         }
     }
 }
