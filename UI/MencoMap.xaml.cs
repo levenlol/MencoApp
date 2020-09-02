@@ -23,8 +23,34 @@ namespace MencoApp.UI
             InitMap();
             InitPin();
 
-            App.GetMencoApp().Sim_AirplaneGeoInformation.OnAircraftDataChanged += GeoInformationChanged;
+            App mencoApp = App.GetMencoApp();
+
+            mencoApp.Sim_AirplaneGeoInformation.OnAircraftDataChanged += GeoInformationChanged;
+            mencoApp.FlightRouteController.FlightRouteReadyDelegate += OnFlightRouteReady;
         }
+
+        private void OnFlightRouteReady(object sender, FlightRouteEventArgs args)
+        {
+            MapPolyline polyline = new MapPolyline();
+            polyline.Stroke = new SolidColorBrush(Colors.Blue);
+            polyline.StrokeThickness = 5;
+            polyline.Opacity = 0.7;
+
+            LocationCollection collection = new LocationCollection();
+
+            for (int i = 0; i < args.FlightPlan.waypoints; i++)
+            {
+                NavigationNode currentNode = args.FlightPlan.route.nodes[i];
+
+                collection.Add(new Location(currentNode.lat, currentNode.lon));
+
+            }
+
+            polyline.Locations = collection;
+
+            BingMap.Children.Add(polyline);
+        }
+
 
         private void GeoInformationChanged(object sender, AirplaneGeoInfoChangedEventArgs args)
         {

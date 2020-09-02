@@ -39,7 +39,7 @@ namespace MencoApp.Core
         public string ident;
         public string name;
         public double lat;
-        public double lan;
+        public double lon;
         public double alt;
     }
 
@@ -118,7 +118,7 @@ namespace MencoApp.Core
             Application.Current?.Dispatcher.Invoke(new Action(() => 
             {
                 FlightRouteEventArgs args = new FlightRouteEventArgs(data);
-                FlightRouteReadyDelegate.Invoke(this, args);
+                FlightRouteReadyDelegate?.Invoke(this, args);
             }));
         }
 

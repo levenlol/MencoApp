@@ -19,7 +19,7 @@ namespace MencoApp
 
         public static event EventHandler<EventArgs> InitializationCompletedEvent;
 
-        public static App GetMencoApp() { return Current as App; }
+        public static App GetMencoApp() { return (App)Current; }
 
         private void InitFlightRouteController()
         {

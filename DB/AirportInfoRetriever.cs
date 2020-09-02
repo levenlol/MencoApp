@@ -51,5 +51,15 @@ namespace MencoApp.DB
             }
         }
 
+        public AirportData? GetAirportByIcaoCode(string icao)
+        {
+            int index = airportsData.FindIndex((AirportData airport) => airport.icao.Equals(icao, StringComparison.OrdinalIgnoreCase));
+            if(index >= 0)
+            {
+                return airportsData[index];
+            }
+
+            return null;
+        }
     }
 }
