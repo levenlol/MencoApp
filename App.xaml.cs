@@ -15,20 +15,32 @@ namespace MencoApp
         public IFlightRouteController FlightRouteController = null;
         public AirportsInfoRetriever IcaoAirports = null;
 
-        public AirplaneLocator Sim_AirplaneLocator = null;
+        public AirplaneGeoInformationExtrapolator Sim_AirplaneGeoInformation = null;
 
         public static event EventHandler<EventArgs> InitializationCompletedEvent;
 
-
         public static App GetMencoApp() { return Current as App; }
+
+        private void InitFlightRouteController()
+        {
+#if FLIGHT_PLAN_DB
+            FlightRouteController = new FPDBFlightRouteController();
+#else
+            compilation error.. not yet supported. Please define FLIGHT_PLAN_DB
+#endif
+        }
+
+        private void InitConnection_Sim()
+        {
+            Sim_AirplaneGeoInformation = new AirplaneGeoInformationExtrapolator();
+        }
 
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
-            var airports = InitAirports();
+            InitFlightRouteController();
+            InitConnection_Sim();
 
-            Sim_AirplaneLocator = new AirplaneLocator();
-            FlightRouteController = new FPDBIFlightRouteController(); // todo. check if we want to use this class or implement another.
-
+            var airports = InitAirports(); // heavy computation
             var connection = FlightRouteController.TestConnection();
 
             await Task.WhenAll(airports, connection);

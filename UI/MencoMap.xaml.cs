@@ -4,7 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using static MencoApp.Core.AirplaneLocator;
+using static MencoApp.Core.AirplaneGeoInformationExtrapolator;
 
 namespace MencoApp.UI
 {
@@ -23,10 +23,10 @@ namespace MencoApp.UI
             InitMap();
             InitPin();
 
-            App.GetMencoApp().Sim_AirplaneLocator.OnAircraftDataChanged += LocationChange;
+            App.GetMencoApp().Sim_AirplaneGeoInformation.OnAircraftDataChanged += GeoInformationChanged;
         }
 
-        private void LocationChange(object sender, LocationChangedEventArgs args)
+        private void GeoInformationChanged(object sender, AirplaneGeoInfoChangedEventArgs args)
         {
             double latitude = args.info.latitude;
             double longitude = args.info.longitude;

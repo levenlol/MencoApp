@@ -1,15 +1,35 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MencoApp.Core
 {
+    // Define data structure that describes the FlightPlan
+    // public struct FlightPlanData MUST be defined. (will not compile otherwise)
+    // It own usage and implementation should be made specific according to currently used api.
+#if !FLIGHT_PLAN_DB
+    // empty implementation.
+    public struct FlightPlanData
+    {
+        //#future: offline implementation.
+    }
+#endif
+
     public class FlightRouteEventArgs : EventArgs
     {
+        public FlightPlanData FlightPlan;
 
+        public FlightRouteEventArgs(FlightPlanData data)
+        {
+            FlightPlan = data;
+        }
     }
 
     public interface IFlightRouteController
@@ -19,39 +39,8 @@ namespace MencoApp.Core
 
         // called when a user prompts a start location and a destination
         void RequestFlightRoute(string fromAirportIcaoCode, string toAirportIcaoCode);
+        void RequestFlightRoute(long id);
 
         Task<bool> TestConnection();
-    }
-
-    // implementation using https://flightplandatabase.com/
-    public sealed class FPDBIFlightRouteController : IFlightRouteController
-    {
-        public event EventHandler<FlightRouteEventArgs> FlightRouteReadyDelegate;
-
-        public async void RequestFlightRoute(string fromAirportIcaoCode, string toAirportIcaoCode)
-        {
-            await Task.Delay(1);
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> TestConnection()
-        {
-            // test HTTP:
-            HttpClient httpClient = new HttpClient();
-            httpClient.Timeout = new TimeSpan(0, 0, 5);
-
-            try
-            {
-                var response = await httpClient.GetAsync(@"https://api.flightplandatabase.com/");
-
-                Console.WriteLine($"TestConnection() completed with code: {response.StatusCode}");
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine($"TestConnection() failed. {e.Message}");
-                return false;
-            }
-        }
     }
 }

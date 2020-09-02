@@ -25,20 +25,20 @@ namespace MencoApp.Core
         public double roll;
     }
 
-    public class AirplaneLocator : AirplaneBaseFunctionality
+    public class AirplaneGeoInformationExtrapolator : AirplaneBaseFunctionality
     {
-        public class LocationChangedEventArgs : EventArgs
+        public class AirplaneGeoInfoChangedEventArgs : EventArgs
         {
             public AirplaneGeoInfo info;
         }
 
-        public override string FunctionalityName => "Airplane Locator";
+        public override string FunctionalityName => "Airplane Geographic Info Extrapolator";
 
         protected override double PollingInterval => 0.2;
 
-        public event EventHandler<LocationChangedEventArgs> OnAircraftDataChanged;
+        public event EventHandler<AirplaneGeoInfoChangedEventArgs> OnAircraftDataChanged;
 
-        public AirplaneLocator() : base()
+        public AirplaneGeoInformationExtrapolator() : base()
         {
             if(IsConnected)
             {
@@ -74,7 +74,7 @@ namespace MencoApp.Core
         protected override void OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
             AirplaneGeoInfo geoInfo = (AirplaneGeoInfo) data.dwData[0];
-            LocationChangedEventArgs args = new LocationChangedEventArgs { info = geoInfo };
+            AirplaneGeoInfoChangedEventArgs args = new AirplaneGeoInfoChangedEventArgs { info = geoInfo };
 
             OnAircraftDataChanged?.Invoke(this, args);
         }
