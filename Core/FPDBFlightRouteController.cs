@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -84,21 +85,29 @@ namespace MencoApp.Core
             req.Headers.Add("Authorization", "Basic " + encoded);
 
             // Request
-            HttpResponseMessage responseMessage = await httpClient.SendAsync(req);
-
-            if(!responseMessage.IsSuccessStatusCode)
+            try
             {
-                throw new ArgumentException();
+                HttpResponseMessage responseMessage = await httpClient.SendAsync(req);
+
+                if (!responseMessage.IsSuccessStatusCode)
+                {
+                    Console.Error.WriteLine("RequestFlightRoute() received a bad status code.");
+                    return;
+                }
+
+                string response = await responseMessage.Content.ReadAsStringAsync();
+
+                Console.WriteLine("FlightPlan Created");
+
+                // Parse request
+                FlightPlanData data = JsonConvert.DeserializeObject<FlightPlanData>(response);
+
+                RequestFlightRoute(data.id);
             }
-
-            string response = await responseMessage.Content.ReadAsStringAsync();
-
-            Console.WriteLine("FlightPlan Created");
-
-            // Parse request
-            FlightPlanData data = JsonConvert.DeserializeObject<FlightPlanData>(response);
-
-            RequestFlightRoute(data.id);
+            catch
+            {
+                MessageBox.Show("Cannot download data. Check your internet connection.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // Get route information from id. if valid we fire the delegate. (on main thread.)
@@ -106,24 +115,32 @@ namespace MencoApp.Core
         {
             HttpRequestMessage getRequest = new HttpRequestMessage(HttpMethod.Get, $@"https://api.flightplandatabase.com/plan/{id}");
 
-            HttpResponseMessage getResponse = await httpClient.SendAsync(getRequest);
-            if (!getResponse.IsSuccessStatusCode)
+            try
             {
-                throw new ArgumentException();
+                HttpResponseMessage getResponse = await httpClient.SendAsync(getRequest);
+                if (!getResponse.IsSuccessStatusCode)
+                {
+                    Console.Error.WriteLine("RequestFlightRoute() received a bad status code.");
+                    return;
+                }
+
+                string routeMessage = await getResponse.Content.ReadAsStringAsync();
+
+                FlightPlanData data = JsonConvert.DeserializeObject<FlightPlanData>(routeMessage);
+                data.notes = data.notes.Remove(data.notes.IndexOf("\n\nOptions:"));
+
+                string flightPlanName = data.fromICAO + " - " + data.toICAO;
+
+                Application.Current?.Dispatcher.Invoke(new Action(() =>
+                {
+                    FlightRouteReadyEventArgs args = new FlightRouteReadyEventArgs(flightPlanName, data);
+                    FlightRouteReadyDelegate?.Invoke(this, args);
+                }));
             }
-
-            string routeMessage = await getResponse.Content.ReadAsStringAsync();
-
-            FlightPlanData data = JsonConvert.DeserializeObject<FlightPlanData>(routeMessage);
-            data.notes = data.notes.Remove(data.notes.IndexOf("\n\nOptions:"));
-
-            string flightPlanName = data.fromICAO + " - " + data.toICAO;
-
-            Application.Current?.Dispatcher.Invoke(new Action(() => 
+            catch
             {
-                FlightRouteReadyEventArgs args = new FlightRouteReadyEventArgs(flightPlanName, data);
-                FlightRouteReadyDelegate?.Invoke(this, args);
-            }));
+                MessageBox.Show("Cannot download data. Check your internet connection.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public async Task<bool> TestConnection()
