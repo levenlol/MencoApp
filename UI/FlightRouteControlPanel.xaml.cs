@@ -18,9 +18,9 @@ namespace MencoApp.UI
     /// <summary>
     /// Interaction logic for FlightRouteControl_PH.xaml
     /// </summary>
-    public partial class FlightRouteControl_PH : UserControl
+    public partial class FlightRouteControlPanel : UserControl
     {
-        public FlightRouteControl_PH()
+        public FlightRouteControlPanel()
         {
             InitializeComponent();
         }
@@ -42,15 +42,21 @@ namespace MencoApp.UI
 
         void GetAirportsData(string fromIcao, string toIcao, out AirportData fromAirportData, out AirportData toAirportData)
         {
+            //check aircode is icao
+            if(fromIcao.Length != 4 || toIcao.Length != 4 || fromIcao == toIcao)
+            {
+                throw new ArgumentException();
+            }
+
+            // try find airport
             AirportsInfoRetriever airports = App.GetMencoApp().IcaoAirports;
 
             AirportData? fromAirport = airports.GetAirportByIcaoCode(fromIcao);
             AirportData? toAirport = airports.GetAirportByIcaoCode(toIcao);
 
-            if(fromAirport == null || toAirport == null || fromIcao == toIcao)
+            if(fromAirport == null || toAirport == null)
             {
                 // todo check online if offline check returned false.
-
                 throw new ArgumentException();
             }
 

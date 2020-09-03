@@ -24,10 +24,12 @@ namespace MencoApp.Core
 
     public class FlightRouteEventArgs : EventArgs
     {
+        public string FlightPlanName;
         public FlightPlanData FlightPlan;
 
-        public FlightRouteEventArgs(FlightPlanData data)
+        public FlightRouteEventArgs(string name, FlightPlanData data)
         {
+            FlightPlanName = name;
             FlightPlan = data;
         }
     }

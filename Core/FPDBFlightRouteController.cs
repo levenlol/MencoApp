@@ -114,10 +114,13 @@ namespace MencoApp.Core
             string routeMessage = await getResponse.Content.ReadAsStringAsync();
 
             FlightPlanData data = JsonConvert.DeserializeObject<FlightPlanData>(routeMessage);
+            data.notes = data.notes.Remove(data.notes.IndexOf("\n\nOptions:"));
+
+            string flightPlanName = data.fromICAO + " - " + data.toICAO;
 
             Application.Current?.Dispatcher.Invoke(new Action(() => 
             {
-                FlightRouteEventArgs args = new FlightRouteEventArgs(data);
+                FlightRouteEventArgs args = new FlightRouteEventArgs(flightPlanName, data);
                 FlightRouteReadyDelegate?.Invoke(this, args);
             }));
         }

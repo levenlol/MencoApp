@@ -1,6 +1,7 @@
 ﻿using MencoApp.Core;
 using Microsoft.Maps.MapControl.WPF;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,6 +16,7 @@ namespace MencoApp.UI
     public partial class MencoMap : UserControl
     {
         Pushpin airplanePin = null;
+        Dictionary<string, List<UIElement>> flightRouteUIElementsMap;
 
         public MencoMap()
         {
@@ -22,6 +24,8 @@ namespace MencoApp.UI
 
             InitMap();
             InitPin();
+
+            flightRouteUIElementsMap = new Dictionary<string, List<UIElement>>();
 
             App mencoApp = App.GetMencoApp();
 
@@ -31,6 +35,16 @@ namespace MencoApp.UI
 
         private void OnFlightRouteReady(object sender, FlightRouteEventArgs args)
         {
+            if(flightRouteUIElementsMap.ContainsKey(args.FlightPlanName))
+            {
+                // we already have a collection describing this particular route.
+                // don't need to add a copy.
+                return;
+            }
+
+            // polyline + markers
+            List<UIElement> flightUIElem = new List<UIElement>(args.FlightPlan.waypoints + 1);
+
             MapPolyline polyline = new MapPolyline();
             polyline.Stroke = new SolidColorBrush(Colors.Blue);
             polyline.StrokeThickness = 5;
@@ -40,15 +54,38 @@ namespace MencoApp.UI
 
             for (int i = 0; i < args.FlightPlan.waypoints; i++)
             {
+                // fill polyline
                 NavigationNode currentNode = args.FlightPlan.route.nodes[i];
 
                 collection.Add(new Location(currentNode.lat, currentNode.lon));
 
+                // add marker
+                Pushpin pin = new Pushpin();
+                pin.Location = new Location(currentNode.lat, currentNode.lon);
+                pin.ToolTip = args.FlightPlan.notes;
+                pin.Content = currentNode.type;
+                pin.Background = GetColorFromNavigationNodeType(currentNode.type);
+
+                BingMap.Children.Add(pin);
+                flightUIElem.Add(pin);
             }
 
             polyline.Locations = collection;
 
             BingMap.Children.Add(polyline);
+            flightUIElem.Add(polyline);
+
+            flightRouteUIElementsMap.Add(args.FlightPlanName, flightUIElem);
+        }
+
+        private SolidColorBrush GetColorFromNavigationNodeType(string type)
+        {
+            if (type == "APT")
+                return new SolidColorBrush(Colors.OrangeRed);
+            else if(type == "FIX")
+                return new SolidColorBrush(Colors.BlueViolet);
+
+            return new SolidColorBrush(Colors.DarkOliveGreen);
         }
 
 

@@ -81,8 +81,8 @@
     <Compile Include="Core\FlightRouteController.cs" />
     <Compile Include="Core\FPDBFlightRouteController.cs" />
     <Compile Include="DB\AirportInfoRetriever.cs" />
-    <Compile Include="UI\FlightRouteControl_PH.xaml.cs">
-      <DependentUpon>FlightRouteControl_PH.xaml</DependentUpon>
+    <Compile Include="UI\FlightRouteControlPanel.xaml.cs">
+      <DependentUpon>FlightRouteControlPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\MencoMap.xaml.cs">
       <DependentUpon>MencoMap.xaml</DependentUpon>
@@ -102,7 +102,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="UI\FlightRouteControl_PH.xaml">
+    <Page Include="UI\FlightRouteControlPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
