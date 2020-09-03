@@ -49,7 +49,7 @@ namespace MencoApp.UI
 
             textBlock.FlightRouteName.Text = args.FlightRouteData.FlightPlanName;
             textBlock.FlightRouteName.Foreground = new SolidColorBrush(args.RouteColor);
-           FlightRoutePanelContainer.Children.Add(textBlock);
+            FlightRoutePanelContainer.Children.Add(textBlock);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

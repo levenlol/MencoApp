@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MencoApp.UI"
              mc:Ignorable="d" d:DesignWidth="230" Height="24">
     <StackPanel>
-        <TextBlock x:Name="FlightRouteName" Text="0000 - 0000" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="LightBlue">
+        <TextBlock x:Name="FlightRouteName" Text="0000 - 0000" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="LightBlue" FontFamily="Segoe UI Semibold" FontSize="14">
             <TextBlock.ContextMenu>
                 <ContextMenu Padding="0" HasDropShadow="True">
                     <MenuItem Header="Delete" Click="MenuItem_Click_Delete" BorderThickness="0"/>
