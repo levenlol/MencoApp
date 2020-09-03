@@ -7,7 +7,7 @@
         xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:ui="clr-namespace:MencoApp.UI"
         mc:Ignorable="d"
-        Title="MencoApp" Height="600" Width="1080" WindowStyle="None"  ResizeMode="NoResize"
+        Title="MencoApp" Height="810" Width="1440" WindowStyle="None"  ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" Background="#FF3a3a3a">
 
     <Grid x:Name="GridLayout">
@@ -21,6 +21,6 @@
         </Grid.ColumnDefinitions>
 
         <ui:MencoMap Grid.Column="1" Grid.Row="1" Width="auto" Height="auto"/>
-        <ui:FlightRouteControlPanel Grid.Column="0" Grid.Row="1" Width="230" Height="560"/>
+        <ui:FlightRouteControlPanel Grid.Column="0" Grid.Row="1" Width="auto" Height="auto"/>
     </Grid>
 </Window>

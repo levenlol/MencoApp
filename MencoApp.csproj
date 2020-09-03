@@ -84,6 +84,9 @@
     <Compile Include="UI\FlightRouteControlPanel.xaml.cs">
       <DependentUpon>FlightRouteControlPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\FlightRouteControlTextBlock.xaml.cs">
+      <DependentUpon>FlightRouteControlTextBlock.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MencoMap.xaml.cs">
       <DependentUpon>MencoMap.xaml</DependentUpon>
     </Compile>
@@ -103,6 +106,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\FlightRouteControlPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\FlightRouteControlTextBlock.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -25,11 +25,18 @@ namespace MencoApp.Core
     public class FlightRouteEventArgs : EventArgs
     {
         public string FlightPlanName;
-        public FlightPlanData FlightPlan;
-
-        public FlightRouteEventArgs(string name, FlightPlanData data)
+        public FlightRouteEventArgs(string name)
         {
             FlightPlanName = name;
+        }
+    }
+
+    public class FlightRouteReadyEventArgs : FlightRouteEventArgs
+    {
+        public FlightPlanData FlightPlan;
+
+        public FlightRouteReadyEventArgs(string name, FlightPlanData data) : base(name)
+        {
             FlightPlan = data;
         }
     }
@@ -37,11 +44,14 @@ namespace MencoApp.Core
     public interface IFlightRouteController
     {
         // event fired when a new flight route is ready.
-        event EventHandler<FlightRouteEventArgs> FlightRouteReadyDelegate;
+        event EventHandler<FlightRouteReadyEventArgs> FlightRouteReadyDelegate;
+        event EventHandler<FlightRouteEventArgs> DeleteFlightRouteDelegate;
 
         // called when a user prompts a start location and a destination
         void RequestFlightRoute(string fromAirportIcaoCode, string toAirportIcaoCode);
         void RequestFlightRoute(long id);
+
+        void DeleteFlightRoute(string routeName);
 
         Task<bool> TestConnection();
     }

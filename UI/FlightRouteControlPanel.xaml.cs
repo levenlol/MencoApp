@@ -1,4 +1,5 @@
-﻿using MencoApp.DB;
+﻿using MencoApp.Core;
+using MencoApp.DB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,32 @@ namespace MencoApp.UI
         public FlightRouteControlPanel()
         {
             InitializeComponent();
+
+            MencoMap.NewFlightRouteDrawDelegate += OnFlightRouteReady;
+            App.GetMencoApp().FlightRouteController.DeleteFlightRouteDelegate += OnFlightRouteDelete;
+        }
+
+        private void OnFlightRouteDelete(object sender, FlightRouteEventArgs args)
+        {
+            foreach(UIElement uiElement in FlightRoutePanelContainer.Children)
+            {
+                FlightRouteControlTextBlock uiTextBlock = uiElement as FlightRouteControlTextBlock;
+                if(uiTextBlock != null && uiTextBlock.FlightRouteName.Text.Equals(args.FlightPlanName))
+                {
+                    FlightRoutePanelContainer.Children.Remove(uiTextBlock);
+                    break;
+                }
+            }
+        }
+
+        // #todo: this should be bound to a UI event. (when the map actually design the route.)
+        private void OnFlightRouteReady(object sender, FlightRouteDrawEventArgs args)
+        {
+            FlightRouteControlTextBlock textBlock = new FlightRouteControlTextBlock();
+
+            textBlock.FlightRouteName.Text = args.FlightRouteData.FlightPlanName;
+            textBlock.FlightRouteName.Foreground = new SolidColorBrush(args.RouteColor);
+           FlightRoutePanelContainer.Children.Add(textBlock);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

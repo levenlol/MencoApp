@@ -10,6 +10,14 @@ using static MencoApp.Core.AirplaneGeoInformationExtrapolator;
 namespace MencoApp.UI
 {
 
+    public class FlightRouteDrawEventArgs : EventArgs
+    {
+        public FlightRouteReadyEventArgs FlightRouteData;
+        public Color RouteColor;
+
+        //more info
+    }
+
     /// <summary>
     /// Interaction logic for MencoMap.xaml
     /// </summary>
@@ -17,6 +25,12 @@ namespace MencoApp.UI
     {
         Pushpin airplanePin = null;
         Dictionary<string, List<UIElement>> flightRouteUIElementsMap;
+        private Color[] RouteColors = new Color[] { Colors.AliceBlue, Colors.Aqua, Colors.BlueViolet, Colors.DarkOrange, Colors.Magenta, Colors.Yellow, Colors.YellowGreen, Colors.DarkViolet, Colors.LightCoral, Colors.Cyan, Colors.Pink, Colors.Chartreuse, Colors.Chocolate, Colors.PaleGoldenrod };
+        private static int ColorIndex = 0;
+
+
+        static public event EventHandler<FlightRouteDrawEventArgs> NewFlightRouteDrawDelegate;
+        
 
         public MencoMap()
         {
@@ -25,15 +39,47 @@ namespace MencoApp.UI
             InitMap();
             InitPin();
 
+            ShuffleColorArray();
+
+
             flightRouteUIElementsMap = new Dictionary<string, List<UIElement>>();
 
             App mencoApp = App.GetMencoApp();
 
             mencoApp.Sim_AirplaneGeoInformation.OnAircraftDataChanged += GeoInformationChanged;
             mencoApp.FlightRouteController.FlightRouteReadyDelegate += OnFlightRouteReady;
+            mencoApp.FlightRouteController.DeleteFlightRouteDelegate += OnFlightRouteDelete;
         }
 
-        private void OnFlightRouteReady(object sender, FlightRouteEventArgs args)
+        private void ShuffleColorArray()
+        {
+            Random random = new Random();
+
+            // Knuth shuffle algorithm :: courtesy of Wikipedia :)
+            for (int t = 0; t < RouteColors.Length; t++)
+            {
+                Color tmp = RouteColors[t];
+                int r = random.Next(t, RouteColors.Length);
+                RouteColors[t] = RouteColors[r];
+                RouteColors[r] = tmp;
+            }
+        }
+
+        private void OnFlightRouteDelete(object sender, FlightRouteEventArgs args)
+        {
+            if (flightRouteUIElementsMap.ContainsKey(args.FlightPlanName))
+            {
+                List<UIElement> uiElements = flightRouteUIElementsMap[args.FlightPlanName];
+                foreach(UIElement element in uiElements)
+                {
+                    BingMap.Children.Remove(element);
+                }
+
+                flightRouteUIElementsMap.Remove(args.FlightPlanName);
+            }
+        }
+
+        private void OnFlightRouteReady(object sender, FlightRouteReadyEventArgs args)
         {
             if(flightRouteUIElementsMap.ContainsKey(args.FlightPlanName))
             {
@@ -46,7 +92,8 @@ namespace MencoApp.UI
             List<UIElement> flightUIElem = new List<UIElement>(args.FlightPlan.waypoints + 1);
 
             MapPolyline polyline = new MapPolyline();
-            polyline.Stroke = new SolidColorBrush(Colors.Blue);
+            Color color = RouteColors[ColorIndex++ % RouteColors.Length];
+            polyline.Stroke = new SolidColorBrush(color);
             polyline.StrokeThickness = 5;
             polyline.Opacity = 0.7;
 
@@ -76,6 +123,12 @@ namespace MencoApp.UI
             flightUIElem.Add(polyline);
 
             flightRouteUIElementsMap.Add(args.FlightPlanName, flightUIElem);
+
+            FlightRouteDrawEventArgs e = new FlightRouteDrawEventArgs();
+            e.FlightRouteData = args;
+            e.RouteColor = color;
+
+            NewFlightRouteDrawDelegate?.Invoke(this, e);
         }
 
         private SolidColorBrush GetColorFromNavigationNodeType(string type)

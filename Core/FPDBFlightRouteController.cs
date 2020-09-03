@@ -46,7 +46,8 @@ namespace MencoApp.Core
     // implementation using https://flightplandatabase.com/
     public sealed class FPDBFlightRouteController : IFlightRouteController
     {
-        public event EventHandler<FlightRouteEventArgs> FlightRouteReadyDelegate;
+        public event EventHandler<FlightRouteReadyEventArgs> FlightRouteReadyDelegate;
+        public event EventHandler<FlightRouteEventArgs> DeleteFlightRouteDelegate;
 
         private HttpClient httpClient;
         public FPDBFlightRouteController()
@@ -120,7 +121,7 @@ namespace MencoApp.Core
 
             Application.Current?.Dispatcher.Invoke(new Action(() => 
             {
-                FlightRouteEventArgs args = new FlightRouteEventArgs(flightPlanName, data);
+                FlightRouteReadyEventArgs args = new FlightRouteReadyEventArgs(flightPlanName, data);
                 FlightRouteReadyDelegate?.Invoke(this, args);
             }));
         }
@@ -142,6 +143,12 @@ namespace MencoApp.Core
                 Console.Error.WriteLine($"TestConnection() failed. {e.Message}");
                 return false;
             }
+        }
+
+        public void DeleteFlightRoute(string routeName)
+        {
+            FlightRouteEventArgs args = new FlightRouteEventArgs(routeName);
+            DeleteFlightRouteDelegate?.Invoke(this, args);
         }
     }
 #endif
