@@ -1,23 +1,42 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
 using System;
+using System.ComponentModel;
 using System.Timers;
 using System.Windows;
 
 namespace MencoApp.Core
 {
-    public abstract class AirplaneBaseFunctionality
+    public enum SimConnectionStatus
+    {
+        Disconnected,
+        Tentative,
+        Connected
+    }
+
+    public abstract class AirplaneBaseFunctionality : INotifyPropertyChanged
     {
         protected  SimConnect simConnection;
-        protected bool PendingActivation = false;
 
         private Timer timer = new Timer();
         private IntPtr Handle; // not sure for what is used for.
 
-        bool Connected = false;
+        private SimConnectionStatus connectionStatus = SimConnectionStatus.Disconnected;
+        public SimConnectionStatus ConnectionStatus 
+        {
+            get { return connectionStatus; }
+
+            set
+            {
+                connectionStatus = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ConnectionStatus"));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         protected abstract double PollingInterval { get; }
 
-        public bool IsConnected => Connected && simConnection != null;
+        public bool IsConnected => ConnectionStatus == SimConnectionStatus.Connected && simConnection != null;
 
         protected AirplaneBaseFunctionality()
         {
@@ -26,7 +45,7 @@ namespace MencoApp.Core
 
         private void Tick(object sender, ElapsedEventArgs e)
         {
-            if(PendingActivation || IsConnected)
+            if(ConnectionStatus == SimConnectionStatus.Tentative || IsConnected)
             {
                 simConnection.ReceiveMessage();
             }
@@ -55,15 +74,14 @@ namespace MencoApp.Core
                 simConnection.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(SimConnect_OnRecvObjectData);
                 simConnection.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
 
-                PendingActivation = true;
+                ConnectionStatus = SimConnectionStatus.Tentative;
 
                 TryStartTimer();
             }
             catch
             {
-                // todo read exception
+                ConnectionStatus = SimConnectionStatus.Disconnected;
             }
-            
         }
 
         protected virtual void OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data){}
@@ -77,6 +95,8 @@ namespace MencoApp.Core
         {
             SIMCONNECT_EXCEPTION eException = (SIMCONNECT_EXCEPTION)data.dwException;
             Console.WriteLine("SimConnect_OnRecvException: " + eException.ToString());
+
+            ConnectionStatus = SimConnectionStatus.Disconnected;
         }
 
         protected virtual void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
@@ -101,9 +121,7 @@ namespace MencoApp.Core
         {
             Console.WriteLine("SimConnect Connected.");
 
-            Connected = true;
-
-            PendingActivation = false;
+            ConnectionStatus = SimConnectionStatus.Connected;
         }
 
         protected virtual void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
@@ -122,8 +140,8 @@ namespace MencoApp.Core
                 simConnection = null;
             }
 
-            Connected = false;
-            PendingActivation = false;
+            ConnectionStatus = SimConnectionStatus.Disconnected;
+
             Handle = IntPtr.Zero;
         }
 

@@ -90,6 +90,9 @@
     <Compile Include="UI\MencoMap.xaml.cs">
       <DependentUpon>MencoMap.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\SimConnectionControl.xaml.cs">
+      <DependentUpon>SimConnectionControl.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -116,6 +119,10 @@
     <Page Include="UI\MencoMap.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\SimConnectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
