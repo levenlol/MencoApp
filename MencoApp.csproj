@@ -99,7 +99,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\AirplaneBaseFunctionality.cs" />
-    <Compile Include="Core\AirplaneLocator.cs" />
+    <Compile Include="Core\AirplaneGeoInformationExtrapolator.cs" />
     <Compile Include="Core\StaticUtils.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

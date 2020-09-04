@@ -8,8 +8,11 @@ namespace MencoApp.Core
     public abstract class AirplaneBaseFunctionality
     {
         protected  SimConnect simConnection;
+        protected bool PendingActivation = false;
+
         private Timer timer = new Timer();
         private IntPtr Handle; // not sure for what is used for.
+
         bool Connected = false;
 
         protected abstract double PollingInterval { get; }
@@ -23,7 +26,7 @@ namespace MencoApp.Core
 
         private void Tick(object sender, ElapsedEventArgs e)
         {
-            if(IsConnected)
+            if(PendingActivation || IsConnected)
             {
                 simConnection.ReceiveMessage();
             }
@@ -33,14 +36,6 @@ namespace MencoApp.Core
         {
             Clear();
 
-        }
-
-        private void Tick(Object myObj, EventArgs args)
-        {
-            if(IsConnected)
-            {
-                simConnection.ReceiveMessage();
-            }
         }
 
         private void Connect()
@@ -59,6 +54,10 @@ namespace MencoApp.Core
                 // Catch a simobject data request
                 simConnection.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(SimConnect_OnRecvObjectData);
                 simConnection.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
+
+                PendingActivation = true;
+
+                TryStartTimer();
             }
             catch
             {
@@ -104,7 +103,7 @@ namespace MencoApp.Core
 
             Connected = true;
 
-            TryStartTimer();
+            PendingActivation = false;
         }
 
         protected virtual void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
@@ -124,6 +123,7 @@ namespace MencoApp.Core
             }
 
             Connected = false;
+            PendingActivation = false;
             Handle = IntPtr.Zero;
         }
 
