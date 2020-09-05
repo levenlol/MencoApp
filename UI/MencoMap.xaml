@@ -23,8 +23,8 @@
         </ControlTemplate>
     </UserControl.Resources>
 
-    <m:Map Name="BingMap" Mode="Road" ZoomLevel="12" Center="45.461925, 9.172599" Margin="0,0,0,0">
-        <Button x:Name="SwitchModeButton"  HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0" Width="auto" Click="SwitchModeButton_Click">
+    <m:Map Name="BingMap" Mode="Road" ZoomLevel="12" Center="45.461925, 9.172599">
+        <Button x:Name="SwitchModeButton"  HorizontalAlignment="Right" VerticalAlignment="Top" Width="auto" Click="SwitchModeButton_Click">
             <TextBlock x:Name="SwitchModeButtonText" Text="Aerial"/>
         </Button>
     </m:Map>

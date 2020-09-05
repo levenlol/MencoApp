@@ -57,32 +57,38 @@ namespace MencoApp.Core
 
         }
 
-        private void Connect()
+        public void Connect()
         {
-            try
+            if(ConnectionStatus == SimConnectionStatus.Disconnected)
             {
-                Handle = new IntPtr();
-                simConnection = new SimConnect(FunctionalityName, Handle, Constants.USER_SIMCONNECT, null, 0);
+                try
+                {
+                    Handle = new IntPtr();
+                    simConnection = new SimConnect(FunctionalityName, Handle, Constants.USER_SIMCONNECT, null, 0);
 
-                simConnection.OnRecvOpen += new SimConnect.RecvOpenEventHandler(SimConnect_OnRecvOpen);
-                simConnection.OnRecvQuit += new SimConnect.RecvQuitEventHandler(SimConnect_OnRecvQuit);
+                    simConnection.OnRecvOpen += new SimConnect.RecvOpenEventHandler(SimConnect_OnRecvOpen);
+                    simConnection.OnRecvQuit += new SimConnect.RecvQuitEventHandler(SimConnect_OnRecvQuit);
 
-                // Listen to exceptions
-                simConnection.OnRecvException += new SimConnect.RecvExceptionEventHandler(SimConnect_OnRecvException);
+                    // Listen to exceptions
+                    simConnection.OnRecvException += new SimConnect.RecvExceptionEventHandler(SimConnect_OnRecvException);
 
-                // Catch a simobject data request
-                simConnection.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(SimConnect_OnRecvObjectData);
-                simConnection.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
+                    // Catch a simobject data request
+                    simConnection.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(SimConnect_OnRecvObjectData);
+                    simConnection.OnRecvSimobjectDataBytype += new SimConnect.RecvSimobjectDataBytypeEventHandler(SimConnect_OnRecvSimobjectDataBytype);
 
-                ConnectionStatus = SimConnectionStatus.Tentative;
+                    ConnectionStatus = SimConnectionStatus.Tentative;
 
-                TryStartTimer();
-            }
-            catch
-            {
-                ConnectionStatus = SimConnectionStatus.Disconnected;
+                    SetupSimData();
+                    TryStartTimer();
+                }
+                catch
+                {
+                    ConnectionStatus = SimConnectionStatus.Disconnected;
+                }
             }
         }
+
+        protected abstract void SetupSimData();
 
         protected virtual void OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data){}
         private void SimConnect_OnRecvObjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
@@ -97,6 +103,7 @@ namespace MencoApp.Core
             Console.WriteLine("SimConnect_OnRecvException: " + eException.ToString());
 
             ConnectionStatus = SimConnectionStatus.Disconnected;
+            Clear();
         }
 
         protected virtual void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
@@ -140,8 +147,9 @@ namespace MencoApp.Core
                 simConnection = null;
             }
 
-            ConnectionStatus = SimConnectionStatus.Disconnected;
+            timer.Stop();
 
+            ConnectionStatus = SimConnectionStatus.Disconnected;
             Handle = IntPtr.Zero;
         }
 

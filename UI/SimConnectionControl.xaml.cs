@@ -33,13 +33,14 @@ namespace MencoApp.UI
             }
             catch
             {
-                Console.WriteLine("ChangeConnectionStatus error. unable to change background connection image's color");
+                Console.Error.WriteLine("ChangeConnectionStatus error. unable to change background connection image's color");
             }
         }
 
         private void ChangeConnectionStatus()
         {
-            switch (App.GetMencoApp().Sim_AirplaneGeoInformation.ConnectionStatus)
+            SimConnectionStatus status = App.GetMencoApp().Sim_AirplaneGeoInformation.ConnectionStatus;
+            switch (status)
             {
                 case SimConnectionStatus.Disconnected:
                     ConnectionStatusImage.Background = new SolidColorBrush(Colors.Red);
@@ -54,6 +55,14 @@ namespace MencoApp.UI
                     ConnectionStatusImage.Background = new SolidColorBrush(Colors.Gray);
                     break;
             }
+
+            ReconnectButton.Visibility = status == SimConnectionStatus.Disconnected ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void ReconnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.GetMencoApp().Sim_AirplaneGeoInformation.Connect();
+            
         }
     }
 }

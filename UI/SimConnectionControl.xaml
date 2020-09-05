@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MencoApp.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="230">
+             d:DesignHeight="40" d:DesignWidth="1440">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Text="MSFS20 Status: " Foreground="LightBlue" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Bold" FontStyle="Italic" />
+        <TextBlock Text="MSFS20: " Foreground="LightBlue" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontWeight="Bold" FontStyle="Italic" />
         <Border Name="ConnectionStatusImage" Background="Red" Margin="5 0 0 0" Height="20" Width="20">
             <Border.OpacityMask>
                 <RadialGradientBrush>
@@ -16,5 +16,8 @@
                 </RadialGradientBrush>
             </Border.OpacityMask>
         </Border>
+        <Button x:Name="ReconnectButton" Margin="5" Height="30" Click="ReconnectButton_Click">
+            <TextBlock Text="Connect" Foreground="LightBlue"/>
+        </Button>
     </StackPanel>
 </UserControl>

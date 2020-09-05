@@ -16,13 +16,5 @@ namespace MencoApp
         {
             InitializeComponent();
         }
-
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-        {
-            base.OnMouseLeftButtonDown(e);
-
-            // allow move the main window.
-            DragMove();
-        }
     }
 }

@@ -40,28 +40,7 @@ namespace MencoApp.Core
 
         public AirplaneGeoInformationExtrapolator() : base()
         {
-            if(ConnectionStatus == SimConnectionStatus.Tentative || IsConnected)
-            {
-                // Positions
-                simConnection.AddToDataDefinition(UserData.Position, "PLANE ALTITUDE", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simConnection.AddToDataDefinition(UserData.Position, "PLANE LATITUDE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simConnection.AddToDataDefinition(UserData.Position, "PLANE LONGITUDE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-
-                // Velocity
-                simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD X", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD Y", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD Z", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-
-                // RotationS
-                simConnection.AddToDataDefinition(UserData.Position, "PLANE HEADING DEGREES TRUE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simConnection.AddToDataDefinition(UserData.Position, "PLANE PITCH DEGREES", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-                simConnection.AddToDataDefinition(UserData.Position, "PLANE BANK DEGREES", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-
-                simConnection.RegisterDataDefineStruct<AirplaneGeoInfo>(UserData.Position);
-
-                //simConnection.RequestDataOnSimObjectType(UserData.Position, UserData.Position, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-                simConnection.RequestDataOnSimObject(UserData.Position, UserData.Position, (uint)SIMCONNECT_SIMOBJECT_TYPE.USER, SIMCONNECT_PERIOD.VISUAL_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
-            }
+            
         }
 
         protected override void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
@@ -77,6 +56,29 @@ namespace MencoApp.Core
             AirplaneGeoInfoChangedEventArgs args = new AirplaneGeoInfoChangedEventArgs { info = geoInfo };
 
             OnAircraftDataChanged?.Invoke(this, args);
+        }
+
+        protected override void SetupSimData()
+        {
+            // Positions
+            simConnection.AddToDataDefinition(UserData.Position, "PLANE ALTITUDE", "feet", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnection.AddToDataDefinition(UserData.Position, "PLANE LATITUDE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnection.AddToDataDefinition(UserData.Position, "PLANE LONGITUDE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+
+            // Velocity
+            simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD X", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD Y", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnection.AddToDataDefinition(UserData.Position, "VELOCITY WORLD Z", "Meters per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+
+            // RotationS
+            simConnection.AddToDataDefinition(UserData.Position, "PLANE HEADING DEGREES TRUE", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnection.AddToDataDefinition(UserData.Position, "PLANE PITCH DEGREES", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnection.AddToDataDefinition(UserData.Position, "PLANE BANK DEGREES", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+
+            simConnection.RegisterDataDefineStruct<AirplaneGeoInfo>(UserData.Position);
+
+            //simConnection.RequestDataOnSimObjectType(UserData.Position, UserData.Position, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+            simConnection.RequestDataOnSimObject(UserData.Position, UserData.Position, (uint)SIMCONNECT_SIMOBJECT_TYPE.USER, SIMCONNECT_PERIOD.VISUAL_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
         }
     }
 }

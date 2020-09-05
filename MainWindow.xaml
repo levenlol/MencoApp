@@ -7,21 +7,32 @@
         xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:ui="clr-namespace:MencoApp.UI"
         mc:Ignorable="d"
-        Title="MencoApp" Height="810" Width="1440" WindowStyle="None"  ResizeMode="NoResize"
+        Title="MencoApp" Height="810" Width="1440" WindowStyle="SingleBorderWindow"  ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" Background="#FF3a3a3a">
 
-    <Grid x:Name="GridLayout">
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="230"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        
+        <Grid x:Name="GridLayout" Grid.Row="1" Margin="10 0 10 10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="230"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <ui:SimConnectionControl Margin="5" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
-        <ui:MencoMap Grid.Column="1" Grid.Row="1" Width="auto" Height="auto"/>
-        <ui:FlightRouteControlPanel Grid.Column="0" Grid.Row="1" Width="auto" Height="auto"/>
+            <ui:FlightRouteControlPanel Grid.Column="0" Grid.Row="1" Width="auto" Height="auto"/>
+            <ui:MencoMap Grid.Column="1" Grid.Row="1" Width="auto" Height="auto" Margin="5 0 0 0"/>
+        </Grid>
+
+        <ui:SimConnectionControl Margin="10" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0"/>
     </Grid>
+    
 </Window>
