@@ -2,6 +2,8 @@
 using Microsoft.Maps.MapControl.WPF;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -18,29 +20,39 @@ namespace MencoApp.UI
         //more info
     }
 
-    /// <summary>
-    /// Interaction logic for MencoMap.xaml
-    /// </summary>
-    public partial class MencoMap : UserControl
+    public partial class MencoMap : UserControl, INotifyPropertyChanged
     {
         Pushpin airplanePin = null;
         Dictionary<string, List<UIElement>> flightRouteUIElementsMap;
         private Color[] RouteColors = new Color[] { Colors.AliceBlue, Colors.Aqua, Colors.BlueViolet, Colors.DarkOrange, Colors.Magenta, Colors.Yellow, Colors.YellowGreen, Colors.DarkViolet, Colors.LightCoral, Colors.Cyan, Colors.Pink, Colors.Chartreuse, Colors.Chocolate, Colors.PaleGoldenrod };
         private static int ColorIndex = 0;
 
+        private bool gPS;
+        public bool GPS 
+        {
+            get
+            {
+                return gPS;
+            }
+            set 
+            {
+                gPS = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("GPS"));
+            }
+        }
 
         static public event EventHandler<FlightRouteDrawEventArgs> NewFlightRouteDrawDelegate;
-        
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public MencoMap()
         {
             InitializeComponent();
+            DataContext = this;
 
             InitMap();
             InitPin();
 
             ShuffleColorArray();
-
 
             flightRouteUIElementsMap = new Dictionary<string, List<UIElement>>();
 
@@ -150,8 +162,10 @@ namespace MencoApp.UI
 
             MovePin(latitude, longitude, yaw);
 
-            //#todo if gps active update map
-            BingMap.Center = new Location(latitude, longitude);
+            if (GPS)
+            {
+                BingMap.Center = new Location(latitude, longitude);
+            }
         }
 
         private void MovePin(double latitude, double longitude, double yaw)
@@ -173,6 +187,8 @@ namespace MencoApp.UI
 
             ApplicationIdCredentialsProvider credentials = new ApplicationIdCredentialsProvider(ApplicationId);
             BingMap.CredentialsProvider = credentials;
+
+            GPS = true;
         }
 
         private void SwitchModeButton_Click(object sender, RoutedEventArgs e)
@@ -204,10 +220,16 @@ namespace MencoApp.UI
             }
         }
 
+        private Location prevCenterLocation;
+
         private void UserControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            // avoid maps going crazy caused by MainWindow calling DragMove()
-            e.Handled = true;
+            prevCenterLocation = BingMap.Center;
+        }
+
+        private void UserControl_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            GPS = prevCenterLocation == BingMap.Center;
         }
     }
 }

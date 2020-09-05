@@ -9,7 +9,8 @@
         mc:Ignorable="d"
         Height="auto" Width="auto" Visibility="Visible" 
         d:DesignWidth="600" d:DesignHeight="400"
-        Mouse.MouseDown="UserControl_MouseDown">
+        Mouse.MouseDown="UserControl_MouseDown"
+        Mouse.MouseUp="UserControl_MouseUp" >
 
     <UserControl.Resources>
         <ControlTemplate x:Key="PushpinControlTemplate" TargetType="m:Pushpin">
@@ -24,8 +25,14 @@
     </UserControl.Resources>
 
     <m:Map Name="BingMap" Mode="Road" ZoomLevel="12" Center="45.461925, 9.172599">
-        <Button x:Name="SwitchModeButton"  HorizontalAlignment="Right" VerticalAlignment="Top" Width="auto" Click="SwitchModeButton_Click">
-            <TextBlock x:Name="SwitchModeButtonText" Text="Aerial"/>
-        </Button>
+        <StackPanel Background="Black" Opacity="0.6" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10">
+            <Button Margin="5" x:Name="SwitchModeButton"  HorizontalAlignment="Center" VerticalAlignment="Center" Width="auto" Click="SwitchModeButton_Click">
+                <TextBlock x:Name="SwitchModeButtonText" Text="Aerial"/>
+            </Button>
+            <StackPanel Orientation="Horizontal" Margin="15 0 0 0">
+                <TextBlock Text="GPS:" Foreground="#FF6FA4FF" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Segoe UI Semibold" FontSize="14"/>
+                <ToggleButton IsChecked="{Binding GPS}" Height="30" Width="60" x:Name="ToggleButtomGPS" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </StackPanel>
     </m:Map>
 </UserControl>
